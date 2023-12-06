@@ -40,3 +40,5 @@ const numberOfMatches = (n: number): number => {
 };
 
 const isEven = (number: number): boolean => number % 2 === 0;
+
+// const numberOfMatches = (n: number): number => n -1
