@@ -63,6 +63,23 @@ const longestCommonPrefixOptimal = (strings: string[]): string => {
   return word;
 };
 
+const longestCommonPrefixOptimalWithReduce = (strings: string[]): string => {
+  const sorted = sortWordsAlphabetically(strings);
+  let output = [];
+  const firstWord = sorted[0];
+  const lastWord = sorted[sorted.length - 1];
+  for (let i = 0; i < firstWord.length; i++) {
+    const isTheSameLetter = firstWord[i] === lastWord[i];
+    if (isTheSameLetter) {
+      output.push(firstWord[i]);
+    } else {
+      break;
+    }
+  }
+  const word = output.join("");
+  return word;
+};
+
 const sortWordsAlphabetically = (words: string[]): string[] => {
   return words.sort((a, b) => (a < b ? -1 : 1));
 };
