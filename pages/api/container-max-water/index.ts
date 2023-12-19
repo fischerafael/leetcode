@@ -5,13 +5,19 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 }
 
 const maxArea = (h: number[]): number => {
-  return getBiggestVolumeFromIndex(h);
-  //   return calculateVolume(4, 3, 10);
+  let biggest = 0;
+  for (let i = 0; i < h.length; i++) {
+    const biggestOfCurrentIndex = getBiggestVolumeFromIndex(h, i);
+    if (biggestOfCurrentIndex > biggest) {
+      biggest = biggestOfCurrentIndex;
+    }
+  }
+  return biggest;
 };
 
 const getBiggestVolumeFromIndex = (
   hNums: number[],
-  initialIndex: number = 1
+  initialIndex: number = 0
 ): number => {
   let biggest = 0;
   let distance = 0;
@@ -23,12 +29,6 @@ const getBiggestVolumeFromIndex = (
     if (isBiggerThanBiggest) {
       biggest = currentVolume;
     }
-
-    console.log("first h", firstItem);
-    console.log("second h", hNums[i]);
-    console.log("distance", distance);
-    console.log("volumes", currentVolume);
-
     distance++;
   }
   return biggest;
