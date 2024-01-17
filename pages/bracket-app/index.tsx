@@ -24,17 +24,44 @@ const INITIAL_MATCHES: IMatch[] = [
 ];
 
 const index = () => {
-  const initialMatchesCount = INITIAL_MATCHES.length;
-
   const [matches, setMatches] = useState<IMatch[]>(INITIAL_MATCHES);
 
-  const setWinner = (team: string, index: number) => {
-    const updated = matches.map((match, i) => {
+  const addMatch = (match: IMatch) => {
+    setMatches((prev) => [...prev, match]);
+  };
+
+  const createMatch = (winnerA: string, winnerB: string): IMatch => {
+    return {
+      winner: undefined,
+      teamA: winnerA,
+      teamB: winnerB,
+    };
+  };
+
+  const setWinner = (team: string, index: number, array: IMatch[]) => {
+    let updated = matches.map((match, i) => {
       if (i === index) {
         return { ...match, winner: team };
       }
       return match;
     });
+    const isOdd = index % 2 === 1;
+    const prevMatch = array[index - 1];
+    const nextMatch = array[index + 1];
+
+    let newMatch = {};
+    if (isOdd) {
+      newMatch = {
+        teamA: prevMatch.winner || "",
+        teamB: team,
+      };
+    } else {
+      newMatch = {
+        teamA: team,
+        teamB: nextMatch.winner || "",
+      };
+    }
+
     setMatches(updated);
   };
 
@@ -48,29 +75,29 @@ const index = () => {
     setMatches(updated);
   };
 
-  const final = [
-    ["palxfla", "spxflu", "sanxbot", "vasxco"],
-    ["palxsp", "sanxco"],
-    ["palxsan"],
-  ];
+  // const final = [
+  //   ["palxfla", "spxflu", "sanxbot", "vasxco"],
+  //   ["palxsp", "sanxco"],
+  //   ["palxsan"],
+  // ];
 
-  const input = ["palxfla", "spxflu", "sanxbot", "vasxco"];
+  // const input = ["palxfla", "spxflu", "sanxbot", "vasxco"];
 
-  const output = getAllRounds(matches);
+  // const output = getAllRounds(matches);
 
-  console.log(["OUTPUT", output]);
+  // console.log(["OUTPUT", output]);
 
   return (
     <div style={{ display: "flex", gap: "32px" }}>
-      {matches.map((match, index) => {
+      {matches.map((match, index, array) => {
         return (
           <div key={index}>
             <div>
-              <span onClick={() => setWinner(match.teamA, index)}>
+              <span onClick={() => setWinner(match.teamA, index, array)}>
                 {match.teamA}
               </span>{" "}
               x{" "}
-              <span onClick={() => setWinner(match.teamB, index)}>
+              <span onClick={() => setWinner(match.teamB, index, array)}>
                 {match.teamB}
               </span>
             </div>
