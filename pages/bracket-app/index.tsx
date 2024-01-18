@@ -2,43 +2,25 @@ import React, { useState } from "react";
 
 const INITIAL_MATCHES: IMatch[] = [
   {
+    round: 4,
     teamA: "Palmeiras",
     teamB: "Flamengo",
     winner: undefined,
   },
-  {
-    teamA: "Vasco",
-    teamB: "Corinthians",
-    winner: undefined,
-  },
-  {
-    teamA: "Fluminense",
-    teamB: "São Paulo",
-    winner: undefined,
-  },
-  {
-    teamA: "Santos",
-    teamB: "Botafogo",
-    winner: undefined,
-  },
+  { round: 4, teamA: "Vasco", teamB: "Corinthians", winner: undefined },
+  { round: 4, teamA: "Fluminense", teamB: "São Paulo", winner: undefined },
+  { round: 4, teamA: "Santos", teamB: "Botafogo", winner: undefined },
 ];
 
 const index = () => {
   const [matches, setMatches] = useState<IMatch[]>(INITIAL_MATCHES);
 
-  const addMatch = (match: IMatch) => {
-    setMatches((prev) => [...prev, match]);
-  };
-
-  const createMatch = (winnerA: string, winnerB: string): IMatch => {
-    return {
-      winner: undefined,
-      teamA: winnerA,
-      teamB: winnerB,
-    };
-  };
-
-  const setWinner = (team: string, index: number, array: IMatch[]) => {
+  const setWinner = (
+    team: string,
+    round: number,
+    index: number,
+    array: IMatch[]
+  ) => {
     let updated = matches.map((match, i) => {
       if (i === index) {
         return { ...match, winner: team };
@@ -49,26 +31,42 @@ const index = () => {
     const prevMatch = array[index - 1];
     const nextMatch = array[index + 1];
 
-    let newMatch = {};
+    let newMatch: IMatch = {
+      teamA: "",
+      teamB: "",
+      round: 0,
+    };
     if (isOdd) {
       newMatch = {
         teamA: prevMatch.winner || "",
         teamB: team,
+        winner: undefined,
+        round: round / 2,
       };
     } else {
       newMatch = {
+        round: round / 2,
         teamA: team,
         teamB: nextMatch.winner || "",
+        winner: undefined,
       };
     }
-
-    setMatches(updated);
+    const final =
+      newMatch.teamA !== "" && newMatch.teamB !== ""
+        ? [...updated, newMatch]
+        : updated;
+    setMatches(final);
   };
 
-  const removeWinner = (matchIndex: number) => {
+  console.log("[matches]", matches);
+
+  const removeWinner = (matchIndex: number, round: number) => {
     const updated = matches.map((match, i) => {
       if (i === matchIndex) {
         return { ...match, winner: undefined };
+      }
+      if (match.round < round) {
+        return { ...match, winner: undefined, teamA: "", teamB: "" };
       }
       return match;
     });
@@ -89,19 +87,27 @@ const index = () => {
 
   return (
     <div style={{ display: "flex", gap: "32px" }}>
-      {matches.map((match, index, array) => {
+      {matches.slice(0, 4).map((match, index, array) => {
         return (
           <div key={index}>
             <div>
-              <span onClick={() => setWinner(match.teamA, index, array)}>
+              <span
+                onClick={() =>
+                  setWinner(match.teamA, match.round, index, array)
+                }
+              >
                 {match.teamA}
               </span>{" "}
               x{" "}
-              <span onClick={() => setWinner(match.teamB, index, array)}>
+              <span
+                onClick={() =>
+                  setWinner(match.teamB, match.round, index, array)
+                }
+              >
                 {match.teamB}
               </span>
             </div>
-            <span onClick={() => removeWinner(index)}>
+            <span onClick={() => removeWinner(index, match.round)}>
               Vencedor: {match.winner}
             </span>
           </div>
@@ -114,6 +120,7 @@ const index = () => {
 export default index;
 
 interface IMatch {
+  round: number;
   teamA: string;
   teamB: string;
   winner?: string;
